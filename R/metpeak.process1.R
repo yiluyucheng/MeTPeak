@@ -29,7 +29,7 @@ ip_mean = mean(IP_mean) #averaged reads per nucleid
   # initialize the variables
   pvalues <- rep(1,nrow(IP))
   for (ii in Ng){
-    print(ii)
+    # print(ii)
     flag <- batch_id==ii
     ip=as.matrix(IP[flag,])
     input=as.matrix(INPUT[flag,])    
@@ -40,8 +40,8 @@ ip_mean = mean(IP_mean) #averaged reads per nucleid
       cl = list(class = matrix(3,nrow(ip)) )
       
     }else{
+      # using constrained newton written in R to do the peak calling
       res=help.comphmm_plus(ip,input+1,matrix(1/K,K,K),ab,F,h)
-      # res = cmpHmm(ip,input+1,matrix(1/K,K,K),ab,F,h) #res[[2]] = trans; to avoid 0, input + 1;
       cl = help.compvit(ip,input+1,res[[2]],res[[1]])
       
     }

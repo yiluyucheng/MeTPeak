@@ -26,6 +26,7 @@
     bA <- max(apply(input,2,median)) + 1
     
     # to avoid ip reads is smaller than a bin of input
+    # using approximate Newton written in R to do the peak calling
       res <-.betabinomial.hmm(ip,input+bA)
       cl <- .betabinomial.vit(ip,input+bA,res[[2]],res[[1]])
       clust_mean = res[[1]][1,]/colSums(res[[1]])
