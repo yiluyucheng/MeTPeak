@@ -1,0 +1,12 @@
+Package: MeTPeak
+Type: Package
+Title: A novel algorithm for calling mRNA m6A peaks by modeling biological variances in MeRIP-seq data
+Version: 1.0.0
+Date: 2016-1-10
+Author: Please feel free to contact Dr. Xiaodong Cui <xdchoi@gmail.com> if you have any questions.
+License: GPL-2
+Depends: Rsamtools, GenomicFeatures (>= 1.14.5), rtracklayer,
+        GenomicAlignments, Rcpp, RcppArmadillo, BH
+biocViews: Sequencing, HighThroughputSequencing, Methylseq, RNAseq
+NeedsCompilation: no
+Packaged: 2016-1-10; biocbuild
