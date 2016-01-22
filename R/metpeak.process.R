@@ -18,7 +18,7 @@
   pvalues <- rep(1,nrow(IP))
   for (ii in Ng){
     
-    print(ii)
+    # print(ii)
     flag <- batch_id==ii
     ip=as.matrix(IP[flag,])
     input=as.matrix(INPUT[flag,])    
