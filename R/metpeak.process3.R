@@ -39,7 +39,8 @@ ip_mean = mean(IP_mean) #averaged reads per nucleid
       cl = list(class = matrix(3,nrow(ip)) )
       
     }else{
-#       res=help.comphmm_plus(ip,input+1,matrix(1/K,K,K),ab,F,h)
+#     
+      # using C++ to do the computation
       res = cmpHmm(ip,input+1,matrix(1/K,K,K),ab,F,h) #res[[2]] = trans; to avoid 0, input + 1;
       cl = help.compvit(ip,input+1,res[[2]],res[[1]])
       
