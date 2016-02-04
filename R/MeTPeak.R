@@ -48,6 +48,8 @@ metpeak <- function(
   PARAMETERS$SAVE_INTERMEDIATE=SAVE_INTERMEDIATE
   PARAMETERS$TXDB=TXDB
   
+  # first source the c++ fiel
+  sourceCpp(system.file('extdata','Comp.cpp',package='MeTPeak'))
   # check annotation
   if (is.na(PARAMETERS$GENOME) & is.na(PARAMETERS$GENE_ANNO_GTF)) { 
     stop("must specify the genome assembly or provide a gene gtf file for MeTPeak to work!", 
@@ -113,6 +115,9 @@ metpeak <- function(
   else if (METHOD==2){
     # using constrained newton written in C++
     PEAK = .peak.call.module2(READS_COUNT,SAMPLE_ID,PARAMETERS)
+  }
+  else if (METHOD==3){
+    PEAK = .peak.call.module3(READS_COUNT,SAMPLE_ID,PARAMETERS)
   }
   else{
     # using approximate method: mean newton in R (quickest version)
