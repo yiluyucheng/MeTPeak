@@ -1,5 +1,5 @@
 
-.betabinomial.hmm  <- function(x,y,alpha=c(5,1),beta=c(1,5),trans=matrix(0.5,2,2),Nit=39,Nerr=1e-3,Npara=1e-5)
+.betabinomial.hmm  <- function(x,y,alpha=c(5,1),beta=c(1,5),trans=matrix(0.5,2,2),Nit=39,Nerr=1e-3,Npara=1e-6)
 {
   
   n <- x+y
@@ -81,17 +81,13 @@
     H[2,2] <- wght[1]*trigamma(sum(c))*m - t(postprob[,1]) %*% (.help.trigamma(as.matrix(n),sum(c))) + t(postprob[,1]) %*% (.help.trigamma(as.matrix(y),c[2]))  - wght[1]*trigamma(c[2])*m    
     H[1,2] <- wght[1]*trigamma(sum(c))*m - t(postprob[,1]) %*% (.help.trigamma(as.matrix(n),sum(c)))
     H[2,1] <- H[1,2]
+    eigvalue <- eigen(H)$values
+    if ( (any(beta < Npara)) | (any(alpha < Npara))
+         | (abs(eigvalue[1]/eigvalue[2]) > 1e12) | (abs(eigvalue[1]/eigvalue[2]) < 1e-12)
+         | any(eigvalue==0) ) {   break  }
     
-    
-    # if H is singular, then break
-    errFlag = FALSE
-    errorHandler <- tryCatch({        # result from Gaussian elimination (H is singular)
-      tmp_step = -solve(H,J)
-    }, simpleError = function(e) {  # only catch simpleErrors
-      errFlag = TRUE
-    })
-    if (errFlag) {break}
-    
+    #   tmp_step <- -solve(H,tol=1e-20) %*% J 
+    tmp_step <- -solve(H,J) #using gaussian smoothing
     tmp <- c + tmp_step
     while(any(tmp <= 0)){
       warning(sprintf("Could not update the Newton step ...\n"))
@@ -100,7 +96,6 @@
     }
     alpha[1] <- tmp[1]
     beta[1] <- tmp[2]
-    
     #7: M-step reestimate parameters for the second component
     c <- rbind(alpha[2],beta[2])
     J[1] <- wght[2]*digamma(sum(c))*m - t(postprob[,2]) %*% (.help.digamma(as.matrix(n),sum(c))) + t(postprob[,2]) %*% (.help.digamma(as.matrix(x),c[1])) - wght[2]*digamma(c[1])*m
@@ -109,17 +104,15 @@
     H[2,2] <- wght[2]*trigamma(sum(c))*m - t(postprob[,2]) %*% (.help.trigamma(as.matrix(n),sum(c))) + t(postprob[,2]) %*% (.help.trigamma(as.matrix(y),c[2]))  - wght[2]*trigamma(c[2])*m
     H[1,2] <- wght[2]*trigamma(sum(c))*m - t(postprob[,2]) %*% (.help.trigamma(as.matrix(n),sum(c)))
     H[2,1] <- H[1,2]
-   
+    # if the H is nearly sigular then break
+    eigvalue <- eigen(H)$values 
     
-    # if H is singular, then break
-    errFlag = FALSE
-    errorHandler <- tryCatch({        # result from Gaussian elimination (H is singular)
-      tmp_step = -solve(H,J)
-    }, simpleError = function(e) {  # only catch simpleErrors
-      errFlag = TRUE
-    })
-    if (errFlag) {break}
+    if ( (any(beta < Npara)) | (any(alpha < Npara))
+         | (abs(eigvalue[1]/eigvalue[2]) > 1e12) | (abs(eigvalue[1]/eigvalue[2]) < 1e-12)
+         | any(eigvalue==0) ) {   break  }
     
+    #     tmp_step <- -solve(H,tol=1e-20) %*% J
+    tmp_step <- -solve(H,J)
     tmp <- c + tmp_step
     while(any(tmp <= 0)){
       warning(sprintf("Could not update the Newton step ...\n"))
@@ -144,8 +137,6 @@
     
   }
   
-  ab=rbind(alpha0,beta0)
-  #  generalize the outputs like cpp and comphmm_plus
-  list(ab=ab,trans=trans0,postprob=postprob0,logl=logl[3:nit0]) 
+  list(alpha=alpha0,beta=beta0,trans=trans0,logl=logl[3:nit0],postprob=postprob0)
   
 }
