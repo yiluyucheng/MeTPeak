@@ -1,9 +1,6 @@
-.betabinomial.vit <- function(x,y,trans,ab)
+.betabinomial.vit <- function(x,y,trans,alpha,beta)
   # use viterbi algorithm to deconvolute the status
 {
-  
-  alpha = ab[1,]
-  beta = ab[2,]
   if (any(is.na(alpha))|any(is.na(beta))){
     alpha <- c(5,1)
     beta <- c(1,5)
@@ -39,4 +36,3 @@
   }
   list(class=class, logl=max(plogl[T,]))
 }
-
