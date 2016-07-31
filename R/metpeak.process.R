@@ -28,8 +28,8 @@
     # to avoid ip reads is smaller than a bin of input
     # using approximate Newton written in R to do the peak calling
       res <-.betabinomial.hmm(ip,input+bA)
-      cl <- .betabinomial.vit(ip,input+bA,res[[2]],res[[1]])
-      clust_mean = res[[1]][1,]/colSums(res[[1]])
+      cl <- .betabinomial.vit(ip,input+bA,res$trans,res$alpha, res$beta)
+      clust_mean = res[[1]]/(res[[1]]+res[[2]])
       maxID = which.max(clust_mean)
       
       # Peak region should have mean ratio over 0.5, meaning IP reads should be more than Input reads in peak region
@@ -40,10 +40,10 @@
           peak_id <- c(0,which( (peak_loci[-1] - peak_loci[-peak_loci_end] ) > 1 ),peak_loci_end)
           for (jj in 1:(length(peak_id)-1)){
             jjpeak <- peak_loci[peak_id[jj]+1]:peak_loci[peak_id[jj+1]]
-            res[[3]][jjpeak,maxID] <- median(res[[3]][jjpeak,maxID])  #res[[3]] = res$postprob
+            res[[5]][jjpeak,maxID] <- median(res[[5]][jjpeak,maxID])  #res[[5]] = res$postprob
           }
         }  
-        pvalues[flag] = 1 - res[[3]][,maxID]
+        pvalues[flag] = 1 - res[[5]][,maxID]
       }
       else{
         pvalues[flag] = 1
