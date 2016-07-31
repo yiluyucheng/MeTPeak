@@ -49,7 +49,7 @@ metpeak <- function(
   PARAMETERS$TXDB=TXDB
   
   # first source the c++ fiel
-  sourceCpp(system.file('extdata','Comp.cpp',package='MeTPeak'))
+  # sourceCpp(system.file('extdata','Comp.cpp',package='MeTPeak'))
   # check annotation
   if (is.na(PARAMETERS$GENOME) & is.na(PARAMETERS$GENE_ANNO_GTF)) { 
     stop("must specify the genome assembly or provide a gene gtf file for MeTPeak to work!", 
