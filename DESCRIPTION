@@ -6,7 +6,7 @@ Date: 2016-1-10
 Author: Please feel free to contact Dr. Xiaodong Cui <xdchoi@gmail.com> if you have any questions.
 License: GPL-2
 Depends: Rsamtools, GenomicFeatures (>= 1.14.5), rtracklayer,
-        GenomicAlignments, Rcpp, RcppArmadillo, BH
+        GenomicAlignments
 biocViews: Sequencing, HighThroughputSequencing, Methylseq, RNAseq
 NeedsCompilation: no
 Packaged: 2016-1-10; biocbuild
