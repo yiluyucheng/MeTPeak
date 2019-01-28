@@ -27,7 +27,7 @@ At last, `MeTPeak` can be installed as:
 ```
 library("devtools")
 source("https://bioconductor.org/biocLite.R")
-install_github("compgenomics/MeTPeak")
+install_github("compgenomics/MeTPeak",build_opts = c("--no-resave-data", "--no-manual"))
 ```
 
 ### Toy Example
