@@ -1,3 +1,5 @@
+#' @export metpeak
+
 metpeak <- function(
   IP_BAM,INPUT_BAM,
   GENOME = NA,
@@ -20,9 +22,9 @@ metpeak <- function(
   TESTING_MODE=NA,
   SAVE_INTERMEDIATE=TRUE,
   METHOD=0
-  
+
 ){
-  
+
   # Wrap parameters ##################################################
   PARAMETERS=list();
   PARAMETERS$GENE_ANNO_GTF=GENE_ANNO_GTF
@@ -47,26 +49,26 @@ metpeak <- function(
   PARAMETERS$TESTING_MODE=TESTING_MODE
   PARAMETERS$SAVE_INTERMEDIATE=SAVE_INTERMEDIATE
   PARAMETERS$TXDB=TXDB
-  
+
   # first source the c++ fiel
   # sourceCpp(system.file('extdata','Comp.cpp',package='MeTPeak'))
   # check annotation
-  if (is.na(PARAMETERS$GENOME) & is.na(PARAMETERS$GENE_ANNO_GTF)) { 
-    stop("must specify the genome assembly or provide a gene gtf file for MeTPeak to work!", 
+  if (is.na(PARAMETERS$GENOME) & is.na(PARAMETERS$GENE_ANNO_GTF)) {
+    stop("must specify the genome assembly or provide a gene gtf file for MeTPeak to work!",
          call. = TRUE, domain = NULL)}
-  
+
   # dependent variables
   if (is.na(PARAMETERS$READ_LENGTH)) {PARAMETERS$READ_LENGTH=.get.bam.read.length(PARAMETERS$IP_BAM[1])}
   if (is.na(PARAMETERS$MINIMAL_PEAK_LENGTH)) {PARAMETERS$MINIMAL_PEAK_LENGTH=PARAMETERS$FRAGMENT_LENGTH/2}
   if (is.na(PARAMETERS$PEAK_CUTOFF_PVALUE)) {PARAMETERS$PEAK_CUTOFF_TYPE="FDR"} else  {PARAMETERS$PEAK_CUTOFF_TYPE="PVALUE"}
   if (is.na(PARAMETERS$OUTPUT_DIR)) {PARAMETERS$OUTPUT_DIR=getwd()}
-  
+
   # algrithm ##################################################
-  
+
   # read gene annotation
   ANNOTATION = .read.gtf(PARAMETERS)
   ANNOTATION_BATCH_ID = .divide.anno.into.batches(ANNOTATION)
-  
+
   # index bam files
   # get bam file
   bam=c(PARAMETERS$IP_BAM,PARAMETERS$INPUT_BAM)
@@ -76,11 +78,11 @@ metpeak <- function(
                                   print(paste("Stage: index bam file", file))
                                   indexBam(file)
                                 }}
-  
+
   # get reads count report
   SAMPLE_ID = .get.sample.id(PARAMETERS)
   BAM_CHRS = .get.bam.chrs(PARAMETERS$IP_BAM[1])
-  
+
   # get reads count
   print("Get Reads Count ...")
   print("This step may take a few hours ...")
@@ -106,7 +108,7 @@ metpeak <- function(
     }
   READS_COUNT=rbind(READS_COUNT,reads_count_group)}
   READS_COUNT=.help.minorm(data.frame(READS_COUNT),SAMPLE_ID) # use median to normalize the depth
-  
+
   # peak calling using different methods
   if (METHOD==1){
     # using constrained newton written in R (slowest version)
@@ -123,8 +125,8 @@ metpeak <- function(
     # using approximate method: mean newton in R (quickest version)
     PEAK = .peak.call.module(READS_COUNT,SAMPLE_ID,PARAMETERS)
   }
-  
-  
+
+
   # store the result
   dir.create(paste(PARAMETERS$OUTPUT_DIR,PARAMETERS$EXPERIMENT_NAME,sep='/'),
              recursive =TRUE,showWarnings = FALSE)
@@ -136,7 +138,7 @@ metpeak <- function(
   TOTAL_PEAK_RESULT=.get.table.peak.result(PEAK,ANNOTATION,READS_COUNT,SAMPLE_ID,
                                            PARAMETERS,ANNOTATION_BATCH_ID,PEAK$loci2peak_merged)
   PEAK_RESULT =.report.peak(TOTAL_PEAK_RESULT,PARAMETERS)
-  
+
   # save result
   if (PARAMETERS$SAVE_INTERMEDIATE==TRUE) {
     tmp_rs =list(ANNOTATION=ANNOTATION,
@@ -146,7 +148,7 @@ metpeak <- function(
                  SAMPLE_ID=SAMPLE_ID,BAM_CHRS=BAM_CHRS)
      save("tmp_rs", file=paste(dir,'metpeak.Rdata',sep='/'))
   }
-  
+
   print("Peak calling analysis is completeted!")
-  
+
 }
